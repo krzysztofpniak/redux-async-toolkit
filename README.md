@@ -1,8 +1,9 @@
 # redux-async-toolkit
 
-[![NPM](https://nodei.co/npm/redux-async-toolkit.png?downloads=true&downloadRank=true)](https://nodei.co/npm/redux-async-toolkit/)
+Library that helps you write async code in redux style without need to write a lot of reducers. Simply use the one included in this library.
+If you are curious about **usage** scroll down to **4th point**.
 
-Library that helps you write async code in redux style without need to write a lot of reducers. Simply use this one.
+[![NPM](https://nodei.co/npm/redux-async-toolkit.png?downloads=true&downloadRank=true)](https://nodei.co/npm/redux-async-toolkit/)
 
 ### Installation
 To install the current version:
@@ -15,7 +16,7 @@ npm install --save redux-async-toolkit
 
 ```js
 import { combineReducers } from 'redux';
-import {asyncReducerCreator} from 'redux-async-toolkit';
+import { asyncReducerCreator } from 'redux-async-toolkit';
 
 const reducer = combineReducers({
   data: asyncReducerCreator({
@@ -65,7 +66,7 @@ export default class HelloComponent extends Component {
   };
 
   componentDidMount() {
-    this.props.loadHello();
+    this.props.loadHello(); // ... call your action on after component mount or whenever you want ...
   }
 
   render() {
@@ -74,7 +75,7 @@ export default class HelloComponent extends Component {
     return (
       <div>
         {hello.pending ? <div>Loading ...</div> : <div>{hello.data}</div>}
-        /* ...at the end you can use 'pending' prop to track the state */
+        /* ... at the end you can use 'pending' prop to track the loading state */
       </div>
       );
   }
