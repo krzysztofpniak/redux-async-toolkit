@@ -1,22 +1,73 @@
 const expect = require('chai').expect;
 import {reduxAsyncMiddleware} from '../src';
+import configureMockStore from 'redux-mock-store';
 
-const createFakeStore = fakeData => ({
-    getState() {
-        return fakeData
+const client = {
+    getData(success, result) {
+        return new Promise((resolve, reject) => success ? resolve(result) : reject(result));
     }
-});
+}
 
-const dispatchWithStoreOf = (storeData, action) => {
-    let dispatched = null;
-    const dispatch = reduxAsyncMiddleware(createFakeStore(storeData))(actionAttempt => dispatched = actionAttempt);
-    dispatch(action);
-    return dispatched;
-};
+const mockStore = configureMockStore([reduxAsyncMiddleware(client)]);
 
-describe('actions', () => {
-    it('should create an action to add a todo', () => {
-        const text = 'Finish docs';
-        expect('asd').to.equal('asdas a');
-    })
+describe('middleware', () => {
+    describe('when action is async', () => {
+        it('should handle Promise success', (done) => {
+            const store = mockStore({});
+            store.dispatch({
+                async: client => client.getData(true, 'some example data'),
+                key: 'test'
+            })
+            .then(() => {
+                const actions = store.getActions();
+                expect(actions.length).to.equal(2);
+                expect(actions[0]).to.deep.equal({
+                    key: 'test',
+                    type: 'redux-async-toolkit/REQUEST'
+                });
+                expect(actions[1]).to.deep.equal({
+                    key: 'test',
+                    type: 'redux-async-toolkit/SUCCESS',
+                    result: 'some example data'
+                });
+            }).then(done).catch(done);
+        });
+
+        it('should handle Promise fail', (done) => {
+            const store = mockStore({});
+            store.dispatch({
+                async: client => client.getData(false, 'error happened'),
+                key: 'test'
+            })
+            .then(() => {
+                const actions = store.getActions();
+                expect(actions.length).to.equal(2);
+                expect(actions[0]).to.deep.equal({
+                    key: 'test',
+                    type: 'redux-async-toolkit/REQUEST'
+                });
+                expect(actions[1]).to.deep.equal({
+                    key: 'test',
+                    type: 'redux-async-toolkit/FAILURE',
+                    error: 'error happened'
+                });
+
+            }).then(done).catch(done);
+        });
+    });
+    describe('when action is normal', () => {
+        it('should bypass normal action', () => {
+            const store = mockStore({});
+            store.dispatch({
+                type: 'normal action',
+                data: 'some param'
+            });
+            const actions = store.getActions();
+            expect(actions.length).to.equal(1);
+            expect(actions[0]).to.deep.equal({
+                type: 'normal action',
+                data: 'some param'
+            });
+        });
+    });
 });
