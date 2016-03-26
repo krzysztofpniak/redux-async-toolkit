@@ -1,6 +1,7 @@
 # redux-async-toolkit
 
 Library that helps you write async code in redux style without need to write a lot of reducers. Simply use the one included in this library.
+
 If you are curious about **usage** scroll down to **4th point**.
 
 [![NPM](https://nodei.co/npm/redux-async-toolkit.png?downloads=true&downloadRank=true)](https://nodei.co/npm/redux-async-toolkit/)
