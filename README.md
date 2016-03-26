@@ -4,7 +4,9 @@ Library that helps you write async code in redux style without need to write a l
 
 If you are curious about **usage** scroll down to **4th point**.
 
-[![NPM](https://nodei.co/npm/redux-async-toolkit.png?downloads=true&downloadRank=true)](https://nodei.co/npm/redux-async-toolkit/)
+[![build status](https://img.shields.io/travis/krzysztofpniak/redux-async-toolkit/master.svg?style=flat-square)](https://travis-ci.org/krzysztofpniak/redux-async-toolkit)
+[![npm version](https://img.shields.io/npm/v/redux-async-toolkit.svg?style=flat-square)](https://www.npmjs.com/package/redux-async-toolkit)
+[![npm downloads](https://img.shields.io/npm/dm/redux-async-toolkit.svg?style=flat-square)](https://www.npmjs.com/package/redux-async-toolkit)
 
 ### Installation
 To install the current version:
