@@ -11,7 +11,7 @@ function walkObj(obj, cb, path = '') {
     Object.keys(obj).forEach(key => {
         const keyPath = path + '.' + key;
         const keyValue = obj[key];
-        if (typeof keyValue === "object" && Object.keys(keyValue).length > 0) {
+        if (typeof keyValue === "object" && !Array.isArray(keyValue) && Object.keys(keyValue).length > 0) {
             walkObj(keyValue, cb, keyPath);
         } else {
             cb(keyPath, keyValue);
@@ -55,7 +55,7 @@ export function asyncReducerCreator(definitions) {
                     ready: true,
                     error: null,
                     data: action.result,
-                    timestamp: new Date().toISOString()
+                    timestamp: action.timestamp
                 }, state);
             case FAILURE:
                 return setImmutable(action.key, {
@@ -84,7 +84,7 @@ export function reduxAsyncMiddleware(client, path = 'data') {
             if (!action.cache || !stateSlice.ready) {
                 next({...rest, type: REQUEST});
                 return async(client, dispatch).then(
-                    (result) => next({...rest, result, type: SUCCESS}),
+                    (result) => next({...rest, result, timestamp: new Date().toISOString(), type: SUCCESS}),
                     (error) => next({...rest, error, type: FAILURE})
                 ).catch((error)=> {
                     console.error('MIDDLEWARE ERROR:', error);
