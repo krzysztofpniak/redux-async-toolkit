@@ -11,7 +11,7 @@ function walkObj(obj, cb, path = '') {
     Object.keys(obj).forEach(key => {
         const keyPath = path + '.' + key;
         const keyValue = obj[key];
-        if (Object.keys(keyValue).length > 0) {
+        if (typeof keyValue === "object" && Object.keys(keyValue).length > 0) {
             walkObj(keyValue, cb, keyPath);
         } else {
             cb(keyPath, keyValue);
