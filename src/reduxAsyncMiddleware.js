@@ -79,9 +79,10 @@ export function reduxAsyncMiddleware(client, path = 'data') {
                 return next(action);
             }
 
-            const stateSlice = get(getState(), path + '.' + action.key);
+            const stateSlice = get(getState(), path + '.' + action.key) || {};
+            const timeElapsed = (new Date().getTime() - new Date(stateSlice.timestamp).getTime())/1000;
 
-            if (!action.cache || !stateSlice.ready) {
+            if (!action.cache || !stateSlice.ready || (timeElapsed > action.cache)) {
                 next({...rest, type: REQUEST});
                 return async(client, dispatch).then(
                     (result) => next({...rest, result, timestamp: new Date().toISOString(), type: SUCCESS}),
@@ -92,7 +93,7 @@ export function reduxAsyncMiddleware(client, path = 'data') {
                 });
             }
 
-            return Promise.resolve(next({...rest, result: stateSlice.data, type: SUCCESS}));
+            return Promise.resolve(next({...rest, result: stateSlice.data, type: SUCCESS, timestamp: stateSlice.timestamp}));
         };
     };
 }

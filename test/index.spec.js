@@ -57,6 +57,69 @@ describe('middleware', () => {
 
             }).then(done).catch(done);
         });
+
+        it('should handle result cache', (done) => {
+            const store = mockStore({
+                data: {
+                    test: {
+                        ready: true,
+                        data: 'some cached data',
+                        timestamp: '2016-03-27T23:00:00.000Z'
+                    }
+                }
+            });
+            MockDate.set('2016-03-27T23:00:09.000Z');
+            store.dispatch({
+                async: client => client.getData(true, 'some fresh data'),
+                key: 'test',
+                cache: 10
+            })
+            .then(() => {
+                const actions = store.getActions();
+                expect(actions.length).to.equal(1);
+                expect(actions[0]).to.deep.equal({
+                    key: 'test',
+                    type: 'redux-async-toolkit/SUCCESS',
+                    result: 'some cached data',
+                    timestamp: '2016-03-27T23:00:00.000Z',
+                    cache: 10
+                });
+            }).then(done).catch(done);
+        });
+
+        it('should handle cache invalidation', (done) => {
+            const store = mockStore({
+                data: {
+                    test: {
+                        ready: true,
+                        data: 'some cached data',
+                        timestamp: '2016-03-27T23:00:00.000Z'
+                    }
+                }
+            });
+            MockDate.set('2016-03-27T23:00:11.000Z');
+            store.dispatch({
+                    async: client => client.getData(true, 'some fresh data'),
+                    key: 'test',
+                    cache: 10
+                })
+                .then(() => {
+                    const actions = store.getActions();
+                    expect(actions.length).to.equal(2);
+                    expect(actions[0]).to.deep.equal({
+                        key: 'test',
+                        type: 'redux-async-toolkit/REQUEST',
+                        cache: 10
+                    });
+                    expect(actions[1]).to.deep.equal({
+                        key: 'test',
+                        type: 'redux-async-toolkit/SUCCESS',
+                        result: 'some fresh data',
+                        cache: 10,
+                        timestamp: '2016-03-27T23:00:11.000Z'
+                    });
+                }).then(done).catch(done);
+        });
     });
     describe('when action is normal', () => {
         it('should bypass normal action', () => {
