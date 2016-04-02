@@ -89,8 +89,13 @@ export default class HelloComponent extends Component {
 
     return (
       <div>
-        {hello.pending ? <div>Loading ...</div> : <div>{hello.data}</div>}
-        /* ... at the end you can use 'pending' prop to track the loading state */
+        {hello.pending ? // 'pending' prop is set to true at each action start
+            <div>Loading ...</div> :
+            <div>
+                {hello.ready && <div>{hello.data}</div>} // 'ready' means that at least one Promise was resolved
+                {hello.error && <div>{hello.error}</div>} // 'error' contains data passed to Promise reject
+            </div>
+        }
       </div>
       );
   }
