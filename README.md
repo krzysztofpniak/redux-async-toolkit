@@ -43,13 +43,25 @@ const finalCreateStore = applyMiddleware(reduxAsyncMiddleware(client))(createSto
 const store finalCreateStore(reducer);
 ```
 
-### 3. Create some actions
+### 3a. Create some actions
 
 ```js
 function loadHello() {
   return {
     key: 'hello', //points to the path in the store
     async: client => client.getHello()
+  };
+}
+```
+
+### 3b. Cache your results if needed
+
+```js
+function loadHello(forceReload) {
+  return {
+    key: 'hello', //points to the path in the store
+    async: client => client.getHello(),
+    cache: forceReload ? false : 10 // cache duration in seconds
   };
 }
 ```
